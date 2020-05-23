@@ -71,13 +71,15 @@ def main(argv):
 			r = requests.get(url)
 			if r.status_code == 200:
 				try:
-					rbl.line = r.json()['data']['monitors'][0]['lines'][0]['name']
-					rbl.station = r.json()['data']['monitors'][0]['locationStop']['properties']['title']
-					rbl.direction = r.json()['data']['monitors'][0]['lines'][0]['towards']
-					rbl.time = r.json()['data']['monitors'][0]['lines'][0]['departures']['departure'][0]['departureTime']['countdown']
-					#dumpRBL(rbl)
-					lcdShow(rbl)
-					time.sleep(st)
+					for monitor in r.json()['data']['monitors']:
+						rbl.station = monitor['locationStop']['properties']['title']
+						for line in monitor['lines']:
+							rbl.line = line['name']
+							rbl.direction = line['towards']
+							rbl.time = line['departures']['departure'][0]['departureTime']['countdown']
+							#dumpRBL(rbl)
+							lcdShow(rbl)
+							time.sleep(st)
 				except:
 					print "some error occurred try next one ..."
 
